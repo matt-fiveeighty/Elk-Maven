@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hunting Guru — Elk Hunting Advisor</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>🦌 Hunting Guru</h1>
+            <span class="header-subtitle">Elk Hunting Advisor — Powered by Cliff Gray's Knowledge Base</span>
+            <div class="header-stats" id="headerStats"></div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h2>Chats</h2>
+                    <button class="btn btn-new" id="newChatBtn" title="New Chat">+</button>
+                </div>
+                <div class="session-list" id="sessionList"></div>
+            </aside>
+
+            <!-- Chat Area -->
+            <main class="chat-area">
+                <div class="messages" id="messages">
+                    <div class="welcome-message" id="welcomeMessage">
+                        <h2>Welcome to Hunting Guru</h2>
+                        <p>Your AI elk hunting advisor. Ask about:</p>
+                        <div class="topic-chips">
+                            <button class="chip" onclick="quickAsk('What are the biggest elk hunting mistakes beginners make?')">Common Mistakes</button>
+                            <button class="chip" onclick="quickAsk('How do thermals work in mountain terrain?')">Thermals & Wind</button>
+                            <button class="chip" onclick="quickAsk('Build me a 5-day archery elk hunt plan')">Hunt Planning</button>
+                            <button class="chip" onclick="quickAsk('What gear do I need for a backcountry bow hunt?')">Gear Advice</button>
+                            <button class="chip" onclick="quickAsk('When is the best time to call elk during the rut?')">Elk Calling</button>
+                            <button class="chip" onclick="quickAsk('How do I read elk sign?')">Reading Sign</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <div class="input-attachments" id="inputAttachments"></div>
+                    <div class="input-row">
+                        <label class="upload-btn" title="Upload image/map">
+                            📎
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                        </label>
+                        <textarea id="messageInput" placeholder="Ask the Guru anything about elk hunting..." rows="1"></textarea>
+                        <button class="btn btn-send" id="sendBtn" title="Send">▶</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Canvas Markup Modal -->
+    <div class="modal-overlay" id="canvasModal" style="display:none;">
+        <div class="modal-content canvas-modal">
+            <div class="canvas-toolbar">
+                <div class="tool-group">
+                    <button class="tool-btn active" data-tool="pen" title="Freehand">✏️</button>
+                    <button class="tool-btn" data-tool="line" title="Line">📏</button>
+                    <button class="tool-btn" data-tool="arrow" title="Arrow">➡️</button>
+                    <button class="tool-btn" data-tool="rect" title="Rectangle">⬜</button>
+                    <button class="tool-btn" data-tool="text" title="Text">T</button>
+                </div>
+                <div class="tool-group">
+                    <button class="color-btn active" data-color="#ff0000" style="background:#ff0000" title="Red"></button>
+                    <button class="color-btn" data-color="#0066ff" style="background:#0066ff" title="Blue"></button>
+                    <button class="color-btn" data-color="#00cc00" style="background:#00cc00" title="Green"></button>
+                    <button class="color-btn" data-color="#ffcc00" style="background:#ffcc00" title="Yellow"></button>
+                    <button class="color-btn" data-color="#ffffff" style="background:#ffffff" title="White"></button>
+                </div>
+                <div class="tool-group">
+                    <button class="tool-btn" id="undoBtn" title="Undo">↩️</button>
+                    <button class="tool-btn" id="clearBtn" title="Clear All">🗑️</button>
+                </div>
+                <div class="tool-group right">
+                    <button class="btn btn-save" id="saveMarkupBtn">Save</button>
+                    <button class="btn btn-close" id="closeCanvasBtn">✕</button>
+                </div>
+            </div>
+            <canvas id="markupCanvas"></canvas>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/sessions.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/canvas.js"></script>
+</body>
+</html>

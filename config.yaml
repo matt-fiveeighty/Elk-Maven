@@ -1,0 +1,45 @@
+# Database
+database:
+  path: "data/youtube_university.db"
+
+# Transcript settings
+transcripts:
+  preferred_languages: ["en", "en-US", "en-GB"]
+  fallback_to_generated: true
+
+# Ollama (local LLM) settings
+ollama:
+  model: "llama3.2"
+  url: "http://localhost:11434"
+  chunk_target_words: 2000
+  chunk_overlap_words: 100
+  max_retries: 3
+  retry_base_delay: 2.0
+
+# Ingestion defaults
+ingestion:
+  batch_size: 50
+  skip_shorts: false
+  min_duration_seconds: 0
+
+# Logging
+logging:
+  level: "INFO"
+  file: "data/youtube_university.log"
+
+# Default categories (seeded on first run)
+default_categories:
+  - name: "Programming"
+    slug: "programming"
+  - name: "Mathematics"
+    slug: "mathematics"
+  - name: "Science"
+    slug: "science"
+  - name: "Finance"
+    slug: "finance"
+  - name: "Health"
+    slug: "health"
+  - name: "Productivity"
+    slug: "productivity"
+  - name: "Career"
+    slug: "career"
