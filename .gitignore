@@ -28,6 +28,11 @@ data/*.log
 data/uploads/
 data/*.csv
 
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
 # OS
 .DS_Store
 Thumbs.db

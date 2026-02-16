@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 import logging
 
@@ -178,6 +180,15 @@ def ingest(ctx, channel, limit):
                         f"  [yellow]SKIP[/yellow] {event['video'][:60]}: {event['reason']}"
                     )
 
+                elif event["event"] == "ip_blocked":
+                    progress.console.print(
+                        f"\n  [bold red]IP BLOCKED[/bold red] YouTube is rate-limiting requests."
+                    )
+                    progress.console.print(
+                        f"  Wait a few hours, then run: [bold]ytuni retry-skipped[/bold]"
+                    )
+                    break
+
                 elif event["event"] == "failed":
                     failed += 1
                     progress.advance(task)
@@ -190,6 +201,38 @@ def ingest(ctx, channel, limit):
 
     console.print()
     console.print(f"[bold]Results:[/bold] {completed} analyzed, {skipped} skipped, {failed} failed")
+
+
+@cli.command("retry-skipped")
+@click.option("--limit", "-n", type=int, default=None, help="Max videos to retry")
+@click.pass_context
+def retry_skipped(ctx, limit):
+    """Reset skipped videos to pending and re-attempt ingestion.
+
+    \b
+    Videos get skipped when transcripts aren't available or YouTube
+    blocks requests. This command resets them so they can be retried.
+
+    \b
+    Examples:
+        ytuni retry-skipped              # Reset all skipped, then ingest
+        ytuni retry-skipped --limit 20   # Retry at most 20 videos
+    """
+    config = ctx.obj["config"]
+    repo = Repository(config["db_path"])
+
+    count = repo.reset_skipped_videos()
+    if count == 0:
+        console.print("[green]No skipped videos to retry.[/green]")
+        repo.close()
+        return
+
+    console.print(f"[bold]Reset {count} skipped videos to pending.[/bold]")
+    console.print("Starting ingestion...\n")
+    repo.close()
+
+    # Invoke the ingest command
+    ctx.invoke(ingest, channel=None, limit=limit)
 
 
 @cli.command()

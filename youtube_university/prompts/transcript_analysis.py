@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 SYSTEM_PROMPT = """\
 You are a knowledge extraction specialist. You analyze YouTube video \
 transcripts and extract actionable knowledge entries.

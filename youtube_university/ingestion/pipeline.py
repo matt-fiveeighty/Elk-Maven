@@ -90,6 +90,10 @@ class IngestionPipeline:
 
         try:
             transcript_data = self.transcript_fetcher.fetch_transcript(yt_video_id)
+        except RuntimeError as e:
+            # IpBlocked — don't mark the video as failed, just stop
+            yield {"event": "ip_blocked", "video": title, "error": str(e)}
+            return
         except Exception as e:
             self.repo.update_video_status(db_id, "failed", str(e))
             self.repo.log_processing_step(

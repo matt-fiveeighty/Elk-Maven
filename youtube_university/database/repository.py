@@ -282,8 +282,17 @@ class Repository:
             WHERE transcript_fts MATCH ?
             ORDER BY rank LIMIT ?
         """
-        rows = self.conn.execute(sql, (query, limit)).fetchall()
+        rows = self.conn.execute(sql, (fts_query, limit)).fetchall()
         return [dict(r) for r in rows]
+
+    def reset_skipped_videos(self) -> int:
+        """Reset all skipped videos back to pending for retry."""
+        cur = self.conn.execute(
+            "UPDATE videos SET ingestion_status = 'pending', failure_reason = NULL "
+            "WHERE ingestion_status = 'skipped'"
+        )
+        self.conn.commit()
+        return cur.rowcount
 
     # ------------------------------------------------------------------
     # Stats
