@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import logging
+import random
 import time
+
+from requests import Session
 
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import (
@@ -21,12 +24,26 @@ except ImportError:
 
 
 class TranscriptFetcher:
-    """Fetches video transcripts using youtube-transcript-api."""
+    """Fetches video transcripts using youtube-transcript-api.
 
-    def __init__(self, preferred_languages: list[str] = None):
-        self.api = YouTubeTranscriptApi()
+    Uses a fresh requests Session per fetch and adds random delays
+    between requests to avoid YouTube IP-blocking.
+    """
+
+    def __init__(self, preferred_languages: list[str] = None,
+                 delay_range: tuple[float, float] = (2.0, 5.0)):
         self.preferred_languages = preferred_languages or ["en", "en-US", "en-GB"]
         self._ip_blocked = False
+        self._delay_range = delay_range
+        self._request_count = 0
+
+    def _make_api(self) -> YouTubeTranscriptApi:
+        """Create a fresh API instance with a new session to rotate cookies."""
+        session = Session()
+        session.headers.update({
+            "Accept-Language": "en-US,en;q=0.9",
+        })
+        return YouTubeTranscriptApi(http_client=session)
 
     @property
     def is_blocked(self) -> bool:
@@ -38,8 +55,15 @@ class TranscriptFetcher:
 
         Raises RuntimeError if YouTube is IP-blocking us (caller should stop).
         """
+        # Throttle: add delay between requests to avoid triggering blocks
+        if self._request_count > 0:
+            delay = random.uniform(*self._delay_range)
+            time.sleep(delay)
+        self._request_count += 1
+
         try:
-            transcript = self.api.fetch(video_id, languages=self.preferred_languages)
+            api = self._make_api()
+            transcript = api.fetch(video_id, languages=self.preferred_languages)
             snippets = transcript.to_raw_data()
             full_text = " ".join(s["text"] for s in snippets)
 
